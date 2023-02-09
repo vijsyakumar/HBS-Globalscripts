@@ -1,10 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "../../../BHC GIT/CPQScripts"
+			"path": "Gloabl Scripts"
 		},
 		{
-			"path": "../../../BHC GIT/A043.S001.P01-OC-TANNER-CPQ-PROJECT-PHASE-01/A043.S001.P01-OC-TANNER-CPQ-PROJECT-PHASE-01/CPQScripts"
+			"path": "Global Scripts"
 		}
 	],
 	"settings": {}
