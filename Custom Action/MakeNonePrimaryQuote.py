@@ -1,0 +1,1 @@
+QuoteHelper.Get(context.Quote.Id).GetCustomField('CF_Primary_Quote').Value = 'False'

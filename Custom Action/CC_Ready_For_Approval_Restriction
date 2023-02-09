@@ -1,0 +1,81 @@
+# -----------------------------------------------------------------------------
+#            Change History Log
+# -----------------------------------------------------------------------------
+# Description:
+# This script is used to display SEA Ready for approval restriction message
+# -----------------------------------------------------------------------------
+# Date            Name                Version        Comments(Changes done)
+# -----------------------------------------------------------------------------
+# 08/18/2022    Sumandrita Moitra          0             -Initial Version
+# 10/17/2022    Ishika Bhattacharya        4             -Replaced Hardcodings
+#                                                        -Incorporated Translation
+# 11/05/2022	Dhruv Bhatnagar			   5			 -Tranlation corrections
+# -----------------------------------------------------------------------------
+
+from Scripting.Quote import MessageLevel
+# Trace.Write("---checking for request approval")
+
+import GM_TRANSLATIONS  # Added by Ishika
+
+lv_LanguageKey = GM_TRANSLATIONS.GetLanguageKey(User)  # Added by Ishika
+lc_trans_type = GM_TRANSLATIONS.GetText('000063', lv_LanguageKey, '', '', '', '', '') #Modified by Dhruv
+
+if (context.Quote.GetCustomField('CF_TRANSACTION_TYPE').Value) == lc_trans_type : #Modified by Dhruv
+    lc_message1 = GM_TRANSLATIONS.GetText('000003', lv_LanguageKey, '', '', '', '', '')  # Added by Ishika
+    lc_Budgetary = GM_TRANSLATIONS.GetText('000072', lv_LanguageKey, '', '', '', '', '')  # Added by Ishika
+    lc_message2 = GM_TRANSLATIONS.GetText('000004', lv_LanguageKey, '', '', '', '', '')  # Added by Ishika
+    lc_approved = GM_TRANSLATIONS.GetText('000071', lv_LanguageKey, '', '', '', '', '')  # Added by Ishika
+    lc_notApproved = GM_TRANSLATIONS.GetText('000109', lv_LanguageKey, '', '', '', '', '')  # Added by Ishika
+    lc_Firm = GM_TRANSLATIONS.GetText('000060', lv_LanguageKey, '', '', '', '', '')  # Added by Ishika
+    lc_Yes = GM_TRANSLATIONS.GetText('000054', lv_LanguageKey, '', '', '', '', '')  # Added by Ishika
+    lc_False = GM_TRANSLATIONS.GetText('000068', lv_LanguageKey, '', '', '', '', '')  # Added by Ishika
+    lc_True = GM_TRANSLATIONS.GetText('000048', lv_LanguageKey, '', '', '', '', '')  # Added by Ishika
+
+    primary_quote = context.Quote.GetCustomField('CF_Primary_Quote').Value
+    proposal_type = context.Quote.GetCustomField('CF_Proposal_Type').Value
+
+    if primary_quote == '':
+        # message1 = 'Please mark the quote as primary before submitting for SEA approval'  #Commented by Ishika
+        message1 = lc_message1  # Added by Ishika
+        exitmsg1 = context.Quote.Messages
+        if exitmsg1.Count > 0:
+            for msgs1 in exitmsg1:
+                if message1 in str(msgs1.Content):
+                    context.Quote.DeleteMessage(msgs1.Id)
+        # Log.Info("message1---->"+str(message1))
+        context.Quote.AddMessage(message1, MessageLevel.Warning, lc_True)#Modified by Dhruv
+
+    # if proposal_type == 'Budgetary':   #Commented by Ishika
+    if proposal_type == lc_Budgetary:  # Added by Ishika
+        # message2 = 'Budgetary quote can not submitted for SEA approval, please change the proposal type before submitting for approval' #Commented by Ishika
+        message2 = lc_message2  # Added by Ishika
+        # Trace.Write("Message2"+str(message2))
+        context.Quote.AddMessage(message2, MessageLevel.Warning, lc_True)#Modified by Dhruv
+    status_value = ''  #Added by ishika
+    sea_approval = sea_approval_lev = ''
+    quote_table = context.Quote.QuoteTables['Functional_Approval'].Rows
+    for customrow in quote_table:
+        status_value = customrow['Approval_Status']
+    # if status_value == 'Approved':   #Commented by Ishika
+    if status_value == lc_approved:  # Added by Ishika
+        # Trace.Write("Approved")
+        # sea_approval = 'Approved'  #Commented by Ishika
+        sea_approval = lc_approved  # Added by Ishika
+    # elif status_value != 'Approved':     #Commented by Ishika
+    elif status_value != lc_approved:  # Added by Ishika
+        # Trace.Write("Not Approved")
+        # sea_approval_lev = 'Not Approved'  #Commented by Ishika
+        sea_approval_lev = lc_notApproved  # Added by Ishika
+
+    # if (primary_quote == "Yes") and (proposal_type == "Firm") and (sea_approval == "Approved") and (sea_approval_lev == ""):  #Commented by Ishika
+    if (primary_quote == lc_Yes) and (proposal_type == lc_Firm) and (sea_approval == lc_approved) and (
+            sea_approval_lev == ""):  # Added by Ishika
+        # Trace.Write("check-----")
+        # context.Quote.GetCustomField('CF_SEA_APPROVAL_FLAG').Value = 'True'  #Commented by Ishika
+        context.Quote.GetCustomField('CF_SEA_APPROVAL_FLAG').Value = lc_True  # Added by Ishika
+    # elif (primary_quote == "Yes") and (proposal_type == "Firm") and (sea_approval == "Approved") and (sea_approval_lev != ""):
+    elif (primary_quote == lc_Yes) and (proposal_type == lc_Firm) and (
+            sea_approval == lc_approved) and (sea_approval_lev != ""):
+        # Trace.Write("=====-")
+        # context.Quote.GetCustomField('CF_SEA_APPROVAL_FLAG').Value = 'False'  #Commented by Ishika
+        context.Quote.GetCustomField('CF_SEA_APPROVAL_FLAG').Value = lc_False  # Added by Ishika

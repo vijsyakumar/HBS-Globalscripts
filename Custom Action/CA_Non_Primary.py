@@ -1,0 +1,1 @@
+context.Quote.GetCustomField('CF_Primary_Quote').Value = ''
